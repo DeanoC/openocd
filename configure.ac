@@ -152,7 +152,8 @@ m4_define([SERIAL_PORT_ADAPTERS],
 	[[[buspirate], [Bus Pirate], [BUS_PIRATE]]])
 
 m4_define([OPTIONAL_LIBRARIES],
-	[[[capstone], [Use Capstone disassembly framework], []]])
+	[[[capstone], [Use Capstone disassembly framework], []],
+	[[xlnx_xvc], [Xilinx XVC], [XLNX_XVC]]])
 
 AC_ARG_ENABLE([doxygen-html],
   AS_HELP_STRING([--disable-doxygen-html],
@@ -322,6 +323,9 @@ AC_ARG_ENABLE([sysfsgpio],
 AC_ARG_ENABLE([xlnx_pcie_xvc],
   AS_HELP_STRING([--enable-xlnx-pcie-xvc], [Enable building support for Xilinx XVC/PCIe.]),
   [build_xlnx_pcie_xvc=$enableval], [build_xlnx_pcie_xvc=no])
+AC_ARG_ENABLE([xlnx_xvc],
+  AS_HELP_STRING([--enable-xlnx-xvc], [Enable building support for Xilinx XVC.]),
+  [build_xlnx_xvc=$enableval], [build_xlnx_xvc=yes])
 
 AS_CASE([$host_os],
   [linux*], [],
@@ -567,6 +571,13 @@ AS_IF([test "x$build_xlnx_pcie_xvc" = "xyes"], [
   AC_DEFINE([BUILD_XLNX_PCIE_XVC], [0], [0 if you don't want Xilinx XVC/PCIe driver.])
 ])
 
+AS_IF([test "x$build_xlnx_xvc" = "xyes"], [
+  build_xlnx_pcie_xvc=yes
+  AC_DEFINE([BUILD_XLNX_XVC], [1], [1 if you want the Xilinx XVC driver.])
+], [
+  AC_DEFINE([BUILD_XLNX_XVC], [0], [0 if you don't want Xilinx XVC driver.])
+])
+
 PKG_CHECK_MODULES([LIBUSB1], [libusb-1.0], [
 	use_libusb1=yes
 	AC_DEFINE([HAVE_LIBUSB1], [1], [Define if you have libusb-1.x])
@@ -697,6 +708,7 @@ AM_CONDITIONAL([REMOTE_BITBANG], [test "x$build_remote_bitbang" = "xyes"])
 AM_CONDITIONAL([BUSPIRATE], [test "x$enable_buspirate" != "xno"])
 AM_CONDITIONAL([SYSFSGPIO], [test "x$build_sysfsgpio" = "xyes"])
 AM_CONDITIONAL([XLNX_PCIE_XVC], [test "x$build_xlnx_pcie_xvc" = "xyes"])
+AM_CONDITIONAL([XLNX_XVC], [test "x$build_xlnx_xvc" = "xyes"])
 AM_CONDITIONAL([USE_LIBUSB1], [test "x$use_libusb1" = "xyes"])
 AM_CONDITIONAL([IS_CYGWIN], [test "x$is_cygwin" = "xyes"])
 AM_CONDITIONAL([IS_MINGW], [test "x$is_mingw" = "xyes"])
